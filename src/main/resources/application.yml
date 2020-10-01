@@ -1,0 +1,45 @@
+
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-request-size: 128MB
+      max-file-size: 128MB
+  main:
+    allow-bean-definition-overriding: true
+  jpa:
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+    hibernate:
+      use-new-id-generator-mappings: false
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: validate
+  application:
+    name: minesweep
+
+server:
+  port: 9000
+
+software:
+  security:
+    jwt:
+      expiration-in-minutes: 60
+      secret-key: 3NTNe3B+LkZ9xKGGAHUqPrji2aW+ivKPEc7F6to9Wpo=
+    salt:
+      key: salt-key
+
+
+---
+
+spring:
+  profiles: dev
+  jpa:
+    show-sql: false
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1/minesweep
+    username: root
+    password: thisisapw
