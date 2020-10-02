@@ -5,21 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class CreateGameRequest {
+public class FlagPositionRequest {
 
     @NotNull
-    @Max(200)
-    private Integer columns;
+    private Integer column;
     @NotNull
-    @Max(200)
-    private Integer rows;
+    private Integer field;
     @NotNull
-    private Integer mines;
+    private FlagType flagType;
 }

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -27,8 +28,9 @@ public class GameService {
         GameField pushedField = game.getGameColumns().get(c).getGameFields().get(r);
         if (pushedField.getMined()) {
             game.setGameStatusEntity(GameStatus.LOST);
+            game.setEndTime(Instant.now());
             pushedField.setHidden(false);
-        } else if (pushedField.getFlagged()) {
+        } else if (pushedField.getFlagType() != null) {
             throw new BadRequestException("A flagged field cannot be revealed");
         } else if (!pushedField.getHidden()) {
             throw new BadRequestException("A revealed field cannot be revealed");
@@ -65,7 +67,7 @@ public class GameService {
             List<GameField> fields = Lists.newArrayList();
             for (long j = 0; j < rows; j++) {
                 GameField.GameFieldBuilder fieldBuilder = GameField.builder().value(0).hidden(true);
-                fields.add(fieldBuilder.id(j).flagged(false).mined(false).hidden(true).value(0).build());
+                fields.add(fieldBuilder.id(j).flagType(null).mined(false).hidden(true).value(0).build());
             }
             columnsList.add(GameColumn.builder().id(i).gameFields(fields).build());
         }

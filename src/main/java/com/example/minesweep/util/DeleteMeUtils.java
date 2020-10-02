@@ -1,6 +1,7 @@
 package com.example.minesweep.util;
 
 import com.example.minesweep.domain.GameEntity;
+import com.example.minesweep.rest.request.FlagType;
 
 public class DeleteMeUtils {
     public static final String ANSI_RESET = "\u001B[0m";
@@ -11,8 +12,12 @@ public class DeleteMeUtils {
             c.getGameFields().forEach(r -> {
                 if (r.getMined() && printMines) {
                     System.out.print(ANSI_RED + "Mine" + ANSI_RESET);
-                } else if (r.getFlagged()) {
-                    System.out.print("Flag");
+                } else if (r.getFlagType() != null) {
+                    if (r.getFlagType().equals(FlagType.FLAG)) {
+                        System.out.print("Flag");
+                    } else {
+                        System.out.print("Mark");
+                    }
                 } else if (!r.getHidden()) {
                     if (r.getMined()) {
                         System.out.print(ANSI_RED + "Mine" + ANSI_RESET);

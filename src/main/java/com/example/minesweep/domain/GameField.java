@@ -1,5 +1,6 @@
 package com.example.minesweep.domain;
 
+import com.example.minesweep.rest.request.FlagType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,7 @@ public class GameField {
     private Long id;
     private Integer value;
     private Boolean hidden;
-    private Boolean flagged;
+    private FlagType flagType;
     private Boolean mined;
 
 }

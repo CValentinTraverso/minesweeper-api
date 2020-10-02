@@ -3,6 +3,7 @@ package com.example.minesweep.function;
 import com.example.minesweep.domain.GameColumn;
 import com.example.minesweep.domain.GameEntity;
 import com.example.minesweep.domain.GameField;
+import com.example.minesweep.rest.request.FlagType;
 import com.example.minesweep.rest.response.Column;
 import com.example.minesweep.rest.response.Field;
 import com.example.minesweep.rest.response.FieldCondition;
@@ -51,7 +52,8 @@ public class MinesweeperConverter {
         if (shouldReveal) {
             condition = gameField.getMined() ? FieldCondition.MINE : gameField.getHidden() ? FieldCondition.HIDDEN : FieldCondition.REVEALED;
         } else {
-            condition = gameField.getFlagged() ? FieldCondition.FLAG :
+            condition = gameField.getFlagType() != null ?
+                    gameField.getFlagType().equals(FlagType.FLAG) ? FieldCondition.FLAG : FieldCondition.MARKED :
                     gameField.getHidden() ? FieldCondition.HIDDEN :
                             FieldCondition.REVEALED;
 

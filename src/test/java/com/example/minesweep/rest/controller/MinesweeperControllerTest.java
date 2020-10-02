@@ -5,7 +5,11 @@ import com.example.minesweep.MinesweepApplication;
 import com.example.minesweep.domain.GameEntity;
 import com.example.minesweep.repository.GameRepository;
 import com.example.minesweep.rest.request.CreateGameRequest;
+import com.example.minesweep.rest.request.FlagPositionRequest;
+import com.example.minesweep.rest.request.FlagType;
 import com.example.minesweep.rest.request.RevealPositionRequest;
+import com.example.minesweep.rest.request.UnflagPositionRequest;
+import com.example.minesweep.rest.response.FieldCondition;
 import com.example.minesweep.rest.response.GameStatus;
 import com.example.minesweep.rest.response.MinesweeperGame;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -104,6 +109,107 @@ public class MinesweeperControllerTest extends BaseIntegrationTest {
         assertThat(revealedGame.getStatus().getId(), is(equalTo(2L)));
         GameEntity entity = gameRepository.getOne(revealedGame.getId());
         assertThat(entity.getRevealedFields(), is(equalTo(100)));
+    }
+
+    @Test
+    public void testFlagPositionWithQuestionMark() throws JsonProcessingException {
+        CreateGameRequest createGameRequest = CreateGameRequest
+                .builder()
+                .rows(10)
+                .columns(10)
+                .mines(0)
+                .build();
+        HttpHeaders authHeaders = getAuthHeaders();
+        ResponseEntity<String> responseEntity = createGame(createGameRequest, authHeaders);
+        MinesweeperGame minesweeperGame = objectMapper.readValue(responseEntity.getBody(), MinesweeperGame.class);
+
+        FlagPositionRequest flagPositionRequest = FlagPositionRequest.builder()
+                .column(0)
+                .field(0)
+                .flagType(FlagType.QUESTION_MARK)
+                .build();
+
+        ResponseEntity<String> revealResponse = testRestTemplate.exchange(
+                String.format(testUrl + "/v1/minesweeper/%d/flag", minesweeperGame.getId()),
+                HttpMethod.PUT,
+                new HttpEntity<>(flagPositionRequest, authHeaders),
+                String.class
+        );
+
+        assertThat(revealResponse.getStatusCode().is2xxSuccessful(), is(true));
+        MinesweeperGame revealedGame = objectMapper.readValue(revealResponse.getBody(), MinesweeperGame.class);
+        assertThat(revealedGame.getColumns().get(0).getFields().get(0).getFieldCondition(), is(equalTo(FieldCondition.MARKED)));
+    }
+
+    @Test
+    public void testFlagPositionWithFlag() throws JsonProcessingException {
+        CreateGameRequest createGameRequest = CreateGameRequest
+                .builder()
+                .rows(10)
+                .columns(10)
+                .mines(0)
+                .build();
+        HttpHeaders authHeaders = getAuthHeaders();
+        ResponseEntity<String> responseEntity = createGame(createGameRequest, authHeaders);
+        MinesweeperGame minesweeperGame = objectMapper.readValue(responseEntity.getBody(), MinesweeperGame.class);
+
+        FlagPositionRequest flagPositionRequest = FlagPositionRequest.builder()
+                .column(0)
+                .field(0)
+                .flagType(FlagType.FLAG)
+                .build();
+
+        ResponseEntity<String> revealResponse = testRestTemplate.exchange(
+                String.format(testUrl + "/v1/minesweeper/%d/flag", minesweeperGame.getId()),
+                HttpMethod.PUT,
+                new HttpEntity<>(flagPositionRequest, authHeaders),
+                String.class
+        );
+
+        assertThat(revealResponse.getStatusCode().is2xxSuccessful(), is(true));
+        MinesweeperGame revealedGame = objectMapper.readValue(revealResponse.getBody(), MinesweeperGame.class);
+        assertThat(revealedGame.getColumns().get(0).getFields().get(0).getFieldCondition(), is(equalTo(FieldCondition.FLAG)));
+    }
+
+    @Test
+    public void testUnFlagPosition() throws JsonProcessingException {
+        CreateGameRequest createGameRequest = CreateGameRequest
+                .builder()
+                .rows(10)
+                .columns(10)
+                .mines(0)
+                .build();
+        HttpHeaders authHeaders = getAuthHeaders();
+        ResponseEntity<String> responseEntity = createGame(createGameRequest, authHeaders);
+        MinesweeperGame minesweeperGame = objectMapper.readValue(responseEntity.getBody(), MinesweeperGame.class);
+
+        FlagPositionRequest flagPositionRequest = FlagPositionRequest.builder()
+                .column(0)
+                .field(0)
+                .flagType(FlagType.FLAG)
+                .build();
+
+        testRestTemplate.exchange(
+                String.format(testUrl + "/v1/minesweeper/%d/flag", minesweeperGame.getId()),
+                HttpMethod.PUT,
+                new HttpEntity<>(flagPositionRequest, authHeaders),
+                String.class
+        );
+        UnflagPositionRequest unflagPositionRequest = UnflagPositionRequest.builder()
+                .column(0)
+                .field(0)
+                .build();
+
+        ResponseEntity<String> revealResponse = testRestTemplate.exchange(
+                String.format(testUrl + "/v1/minesweeper/%d/unflag", minesweeperGame.getId()),
+                HttpMethod.PUT,
+                new HttpEntity<>(unflagPositionRequest, authHeaders),
+                String.class
+        );
+
+        assertThat(revealResponse.getStatusCode().is2xxSuccessful(), is(true));
+        MinesweeperGame revealedGame = objectMapper.readValue(revealResponse.getBody(), MinesweeperGame.class);
+        assertThat(revealedGame.getColumns().get(0).getFields().get(0).getFieldCondition(), is(FieldCondition.HIDDEN));
     }
 
     private ResponseEntity<String> createGame(CreateGameRequest createGameRequest, HttpHeaders authHeaders) throws JsonProcessingException {

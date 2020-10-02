@@ -4,7 +4,8 @@ public enum FieldCondition {
     MINE(1, "mine"),
     HIDDEN(2, "hidden"),
     FLAG(3, "flag"),
-    REVEALED(4, "revealed");
+    MARKED(4, "marked"),
+    REVEALED(5, "revealed");
 
     Integer code;
     String name;

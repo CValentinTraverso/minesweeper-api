@@ -2,7 +2,9 @@ package com.example.minesweep.rest.controller;
 
 import com.example.minesweep.exception.BadRequestException;
 import com.example.minesweep.rest.request.CreateGameRequest;
+import com.example.minesweep.rest.request.FlagPositionRequest;
 import com.example.minesweep.rest.request.RevealPositionRequest;
+import com.example.minesweep.rest.request.UnflagPositionRequest;
 import com.example.minesweep.rest.response.MinesweeperGame;
 import com.example.minesweep.service.MinesweeperService;
 import com.example.minesweep.util.Constants;
@@ -43,5 +45,19 @@ public class MinesweeperController {
                                           @Validated @RequestBody RevealPositionRequest revealPositionRequest) {
 
         return minesweeperService.revealPosition(id, revealPositionRequest);
+    }
+
+    @RequestMapping(value = {"/minesweeper/{id}/flag"}, method = RequestMethod.PUT)
+    public MinesweeperGame flagPosition(@PathVariable(name = "id") Long id,
+                                          @Validated @RequestBody FlagPositionRequest flagPositionRequest) {
+
+        return minesweeperService.flagPosition(id, flagPositionRequest);
+    }
+
+    @RequestMapping(value = {"/minesweeper/{id}/unflag"}, method = RequestMethod.PUT)
+    public MinesweeperGame unflagPosition(@PathVariable(name = "id") Long id,
+                                          @Validated @RequestBody UnflagPositionRequest unflagPositionRequest) {
+
+        return minesweeperService.unflagPosition(id, unflagPositionRequest);
     }
 }

@@ -12,7 +12,9 @@ import com.example.minesweep.exception.NotFoundException;
 import com.example.minesweep.function.MinesweeperConverter;
 import com.example.minesweep.repository.GameRepository;
 import com.example.minesweep.rest.request.CreateGameRequest;
+import com.example.minesweep.rest.request.FlagPositionRequest;
 import com.example.minesweep.rest.request.RevealPositionRequest;
+import com.example.minesweep.rest.request.UnflagPositionRequest;
 import com.example.minesweep.rest.response.MinesweeperGame;
 import com.example.minesweep.util.DeleteMeUtils;
 import com.example.minesweep.util.GameStatus;
@@ -65,7 +67,32 @@ public class MinesweeperService {
         int winCondition = (gameEntity.getGameColumns().size() * gameEntity.getGameColumns().get(0).getGameFields().size()) - gameEntity.getMines();
         if (gameEntity.getRevealedFields() == winCondition) {
             gameEntity.setGameStatusEntity(GameStatus.WON);
+            gameEntity.setEndTime(Instant.now());
         }
+        gameRepository.save(gameEntity);
+        return minesweeperConverter.toMinesweeper(gameEntity);
+    }
+
+    public MinesweeperGame flagPosition(Long id, FlagPositionRequest flagPositionRequest) {
+        GameEntity gameEntity = retrieveGame(id);
+        Integer c = flagPositionRequest.getColumn();
+        Integer r = flagPositionRequest.getField();
+        if (c > gameEntity.getGameColumns().size() || r > gameEntity.getGameColumns().get(0).getGameFields().size()) {
+            throw new BadRequestException("Out of bounds");
+        }
+        gameEntity.getGameColumns().get(c).getGameFields().get(r).setFlagType(flagPositionRequest.getFlagType());
+        gameRepository.save(gameEntity);
+        return minesweeperConverter.toMinesweeper(gameEntity);
+    }
+
+    public MinesweeperGame unflagPosition(Long id, UnflagPositionRequest unflagPositionRequest) {
+        GameEntity gameEntity = retrieveGame(id);
+        Integer c = unflagPositionRequest.getColumn();
+        Integer r = unflagPositionRequest.getField();
+        if (c > gameEntity.getGameColumns().size() || r > gameEntity.getGameColumns().get(0).getGameFields().size()) {
+            throw new BadRequestException("Out of bounds");
+        }
+        gameEntity.getGameColumns().get(c).getGameFields().get(r).setFlagType(null);
         gameRepository.save(gameEntity);
         return minesweeperConverter.toMinesweeper(gameEntity);
     }
@@ -82,5 +109,4 @@ public class MinesweeperService {
         }
         return gameEntity;
     }
-
 }
