@@ -11,12 +11,12 @@ import com.example.minesweep.rest.request.CreateSessionRequest;
 import com.example.minesweep.rest.request.ModifyAccountRequest;
 import com.example.minesweep.rest.request.RefreshSessionRequest;
 import com.example.minesweep.rest.response.Account;
+import com.example.minesweep.rest.response.CreateSessionResponse;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.example.minesweep.rest.response.CreateSessionResponse;
 
 import javax.transaction.Transactional;
 import java.util.Optional;

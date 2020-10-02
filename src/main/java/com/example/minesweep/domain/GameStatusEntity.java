@@ -13,21 +13,17 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "account")
-public class AccountEntity {
+@Table(name = "game_status")
+public class GameStatusEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-    @Column(name = "email")
-    private String email;
-    @Column(name = "name")
-    private String name;
-    @Column(name = "password")
-    private String password;
+    @Column(name = "status")
+    private String status;
 }

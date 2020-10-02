@@ -1,9 +1,8 @@
 package com.example.minesweep.rest.controller;
 
+import com.example.minesweep.BaseIntegrationTest;
 import com.example.minesweep.MinesweepApplication;
 import com.example.minesweep.domain.AccountEntity;
-import com.example.minesweep.repository.AccountRepository;
-import com.example.minesweep.rest.request.CreateAccountRequest;
 import com.example.minesweep.rest.request.CreateSessionRequest;
 import com.example.minesweep.rest.request.ModifyAccountRequest;
 import com.example.minesweep.rest.request.RefreshSessionRequest;
@@ -12,14 +11,10 @@ import com.example.minesweep.rest.response.CreateAccountResponse;
 import com.example.minesweep.rest.response.CreateSessionResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,26 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith(SpringRunner.class)
 @ActiveProfiles("dev")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = MinesweepApplication.class)
-public class AccountControllerTest {
-
-    private final String TEST_EMAIL = "testEmail@testDomain.com";
-    private final String TEST_PASSWORD = "testPassword";
-    private final String TEST_NAME = "testName";
-    @LocalServerPort
-    private int port;
-    @Autowired
-    private AccountRepository accountRepository;
-
-    TestRestTemplate testRestTemplate;
-    private String testUrl;
-    @Autowired
-    ObjectMapper objectMapper;
-
-    @Before
-    public void setUp() throws Exception {
-        testRestTemplate = new TestRestTemplate();
-        testUrl = String.format("http://localhost:%d/", port);
-    }
+public class AccountControllerTest extends BaseIntegrationTest {
 
     @Test
     public void testCreateAccount() throws JsonProcessingException {
@@ -323,27 +299,5 @@ public class AccountControllerTest {
         );
 
         assertThat(responseEntity.getStatusCode().is4xxClientError(), is(true));
-    }
-
-    private ResponseEntity<String> createAccount(String email, String password) {
-        CreateAccountRequest createAccountRequest = CreateAccountRequest.builder()
-                .email(email).password(password).name(TEST_NAME).build();
-        return testRestTemplate.exchange(
-                testUrl + "/v1/account",
-                HttpMethod.POST,
-                new HttpEntity<>(createAccountRequest, null),
-                String.class
-        );
-
-    }
-
-    private ResponseEntity<String> createAccount() {
-        return this.createAccount(TEST_EMAIL, TEST_PASSWORD);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        Optional<AccountEntity> firstByEmail = accountRepository.findFirstByEmail(TEST_EMAIL);
-        firstByEmail.ifPresent(accountEntity -> accountRepository.delete(accountEntity));
     }
 }
