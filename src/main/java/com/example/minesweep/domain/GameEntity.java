@@ -48,6 +48,9 @@ public class GameEntity {
     @Column(name = "end_time")
     private Instant endTime;
 
+    @Column(name = "mines")
+    private Integer mines;
+
     @Type(type = "json")
     @Column(name = "board", columnDefinition = "json")
     private List<GameColumn> gameColumns;

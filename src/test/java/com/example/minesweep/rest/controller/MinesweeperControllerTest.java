@@ -5,14 +5,16 @@ import com.example.minesweep.MinesweepApplication;
 import com.example.minesweep.domain.GameEntity;
 import com.example.minesweep.repository.GameRepository;
 import com.example.minesweep.rest.request.CreateGameRequest;
+import com.example.minesweep.rest.request.RevealPositionRequest;
+import com.example.minesweep.rest.response.GameStatus;
 import com.example.minesweep.rest.response.MinesweeperGame;
-import com.example.minesweep.util.GameStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
@@ -42,16 +44,11 @@ public class MinesweeperControllerTest extends BaseIntegrationTest {
                 .mines(10)
                 .build();
 
-        ResponseEntity<String> responseEntity = testRestTemplate.exchange(
-                testUrl + "/v1/minesweeper",
-                HttpMethod.POST,
-                new HttpEntity<>(createGameRequest, getAuthHeaders()),
-                String.class
-        );
+        ResponseEntity<String> responseEntity = createGame(createGameRequest, getAuthHeaders());
 
         assertThat(responseEntity.getStatusCode().is2xxSuccessful(), is(true));
         MinesweeperGame minesweeperGame = objectMapper.readValue(responseEntity.getBody(), MinesweeperGame.class);
-        assertThat(minesweeperGame.getStatus(), is(equalTo(GameStatus.ACTIVE.getId())));
+        assertThat(minesweeperGame.getStatus(), is(equalTo(GameStatus.builder().id(1L).name("ACTIVE").build())));
         assertThat(minesweeperGame.getColumns().size(), is(equalTo(10)));
         assertThat(minesweeperGame.getColumns().get(0).getFields().size(), is(equalTo(10)));
         AtomicInteger mines = new AtomicInteger();
@@ -73,13 +70,48 @@ public class MinesweeperControllerTest extends BaseIntegrationTest {
                 .mines(10)
                 .build();
 
-        ResponseEntity<String> responseEntity = testRestTemplate.exchange(
-                testUrl + "/v1/minesweeper",
-                HttpMethod.POST,
-                new HttpEntity<>(createGameRequest, getAuthHeaders()),
+        ResponseEntity<String> responseEntity = createGame(createGameRequest, getAuthHeaders());
+
+        assertThat(responseEntity.getStatusCode().is4xxClientError(), is(true));
+    }
+
+    @Test
+    public void testRevealRevealsAllFieldsWithValueZero() throws JsonProcessingException {
+    CreateGameRequest createGameRequest = CreateGameRequest
+                .builder()
+                .rows(10)
+                .columns(10)
+                .mines(0)
+                .build();
+        HttpHeaders authHeaders = getAuthHeaders();
+        ResponseEntity<String> responseEntity = createGame(createGameRequest, authHeaders);
+        MinesweeperGame minesweeperGame = objectMapper.readValue(responseEntity.getBody(), MinesweeperGame.class);
+
+        RevealPositionRequest revealPositionRequest = RevealPositionRequest.builder()
+                .column(0)
+                .field(0)
+                .build();
+
+        ResponseEntity<String> revealResponse = testRestTemplate.exchange(
+                String.format(testUrl + "/v1/minesweeper/%d/reveal", minesweeperGame.getId()),
+                HttpMethod.PUT,
+                new HttpEntity<>(revealPositionRequest, authHeaders),
                 String.class
         );
 
-        assertThat(responseEntity.getStatusCode().is4xxClientError(), is(true));
+        assertThat(revealResponse.getStatusCode().is2xxSuccessful(), is(true));
+        MinesweeperGame revealedGame = objectMapper.readValue(revealResponse.getBody(), MinesweeperGame.class);
+        assertThat(revealedGame.getStatus().getId(), is(equalTo(2L)));
+        GameEntity entity = gameRepository.getOne(revealedGame.getId());
+        assertThat(entity.getRevealedFields(), is(equalTo(100)));
+    }
+
+    private ResponseEntity<String> createGame(CreateGameRequest createGameRequest, HttpHeaders authHeaders) throws JsonProcessingException {
+        return testRestTemplate.exchange(
+                testUrl + "/v1/minesweeper",
+                HttpMethod.POST,
+                new HttpEntity<>(createGameRequest, authHeaders),
+                String.class
+        );
     }
 }

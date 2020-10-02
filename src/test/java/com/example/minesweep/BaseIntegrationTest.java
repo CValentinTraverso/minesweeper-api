@@ -48,6 +48,11 @@ public abstract class BaseIntegrationTest {
 
     protected HttpHeaders getAuthHeaders() throws JsonProcessingException {
         ResponseEntity<String> responseEntity = this.createAccount();
+        HttpHeaders headers = extractAuthHeader(responseEntity);
+        return headers;
+    }
+
+    protected HttpHeaders extractAuthHeader(ResponseEntity<String> responseEntity) throws JsonProcessingException {
         CreateAccountResponse createAccountResponse = objectMapper.readValue(responseEntity.getBody(), CreateAccountResponse.class);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + createAccountResponse.getAuthToken());
