@@ -37,6 +37,8 @@ public class AuthConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new AuthenticationFilter(secretKey), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/*/account/**").permitAll()
+                .antMatchers("/v2/api-docs").permitAll()
+                .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers("/*/public/**").permitAll()
                 .antMatchers("/**").authenticated();
         CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
