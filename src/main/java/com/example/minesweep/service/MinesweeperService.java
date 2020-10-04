@@ -1,11 +1,8 @@
 package com.example.minesweep.service;
 
 import com.example.minesweep.domain.AccountEntity;
-import com.example.minesweep.domain.GameColumn;
 import com.example.minesweep.domain.GameEntity;
 import com.example.minesweep.domain.GameEntity.GameEntityBuilder;
-import com.example.minesweep.domain.GameField;
-import com.example.minesweep.domain.GameField.GameFieldBuilder;
 import com.example.minesweep.exception.BadRequestException;
 import com.example.minesweep.exception.ForbiddenException;
 import com.example.minesweep.exception.NotFoundException;
@@ -16,17 +13,13 @@ import com.example.minesweep.rest.request.FlagPositionRequest;
 import com.example.minesweep.rest.request.RevealPositionRequest;
 import com.example.minesweep.rest.request.UnflagPositionRequest;
 import com.example.minesweep.rest.response.MinesweeperGame;
-import com.example.minesweep.util.DeleteMeUtils;
 import com.example.minesweep.util.GameStatus;
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
 @Service

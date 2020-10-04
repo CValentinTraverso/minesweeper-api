@@ -8,7 +8,6 @@ import com.example.minesweep.rest.response.Column;
 import com.example.minesweep.rest.response.Field;
 import com.example.minesweep.rest.response.FieldCondition;
 import com.example.minesweep.rest.response.MinesweeperGame;
-import com.example.minesweep.util.DeleteMeUtils;
 import com.example.minesweep.util.GameStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ public class MinesweeperConverter {
     private final GameStatusConverter gameStatusConverter;
 
     public MinesweeperGame toMinesweeper(GameEntity gameEntity) {
-        DeleteMeUtils.print(gameEntity, true);
         return MinesweeperGame
                 .builder()
                 .id(gameEntity.getId())
@@ -32,7 +30,7 @@ public class MinesweeperConverter {
                 .columns(gameEntity
                         .getGameColumns()
                         .stream()
-                        .map(c-> this.toColumn(c, gameEntity.getGameStatusEntity().getId().equals(GameStatus.LOST.getId()))).collect(Collectors.toList()))
+                        .map(c -> this.toColumn(c, gameEntity.getGameStatusEntity().getId().equals(GameStatus.LOST.getId()))).collect(Collectors.toList()))
                 .gameDurationInSeconds(Duration.between(gameEntity.getStartTime(),
                         gameEntity.getEndTime() != null ? gameEntity.getEndTime() : Instant.now()).getSeconds())
                 .build();

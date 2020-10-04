@@ -1,0 +1,5 @@
+[node-1]
+18.224.199.52 ansible_user=ubuntu
+
+[nodes:children]
+node-1

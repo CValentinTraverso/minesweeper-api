@@ -1,0 +1,41 @@
+- hosts: "{{hosts_select | default('all')}}"
+  become: yes
+  serial: 1
+
+  tasks:
+    - name: deploy
+      become_user: ubuntu
+      block:
+        - name: Stop currently running service
+          shell: killall java
+          ignore_errors: yes
+
+        - name: create backup directory
+          shell: mkdir -p /home/ubuntu/backup
+
+        - name: Remove backup
+          file:
+            path: /home/ubuntu/backup/backup.jar
+            state: absent
+
+        - name: create backup
+          shell: mv /home/ubuntu/minesweep.jar /home/ubuntu/backup/backup.jar
+          ignore_errors: yes
+
+        - name: upload build
+          copy:
+            src: ./minesweep-0.0.1.jar
+            dest: /home/ubuntu/minesweep.jar
+
+        - name: run the service
+          shell: nohup java -jar -Dspring.profiles.active\=aws minesweep.jar > logs.txt &
+
+        - name: check if running
+          uri:
+            url: http://127.0.0.1:9000/v2/api-docs
+            status_code: 200
+          register: result
+          until: result is not failed
+          retries: 10
+          delay: 1
+          changed_when: false

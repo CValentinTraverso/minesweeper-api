@@ -4,11 +4,19 @@ Minesweep is a playable RESTful api for the classic minesweeper game
 
 ## Requirements
 
-To be able to run this project you need to have maven, docker and java8, make is optional
+To be able to run this project you need to have maven, docker, compose and java8, make is optional
 
 ## Compilation
 
 To compile and create an executable, run make package
+
+## Deployment
+
+To be able to automatically deploy this service, you need to have ansible and ssh access to the remote host 
+
+To deploy just run: make deploy.
+
+If you want to change the remote server where the service is going to be deployed, modify the ansible/aws.inventory file
 
 ## Usage
 

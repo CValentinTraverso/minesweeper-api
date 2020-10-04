@@ -46,3 +46,13 @@ spring:
     url: jdbc:mysql://127.0.0.1/minesweep
     username: root
     password: thisisapw
+
+---
+
+spring:
+  profiles: aws
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://database-1.clnoq8wrmymw.us-east-2.rds.amazonaws.com/minesweep
+    username: enf
+    password: aws
