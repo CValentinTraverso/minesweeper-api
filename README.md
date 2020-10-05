@@ -20,8 +20,12 @@ If you want to change the remote server where the service is going to be deploye
 
 ## Usage
 
+This service is available in: http://18.224.199.52:9000
+
 This api contains swagger documentation, once running, go to [swagger online tool](https://petstore.swagger.io/?_ga=2.137711664.1210155368.1601735400-1698795516.1601735400#/) 
-and put http://localhost:9000/v2/api-docs in the explore bar
+and put http://localhost:9000/v2/api-docs in the explore bar.
+
+Also there is an insomnia rest file called minesweep.insomnia.json that you can import into insomnia
 
 ### Curl samples
 
@@ -29,7 +33,7 @@ and put http://localhost:9000/v2/api-docs in the explore bar
 
 ```
 curl --request POST \
-  --url http://localhost:9000/v1/account \
+  --url http://18.224.199.52:9000/v1/account \
   --header 'content-type: application/json' \
   --data '{
 	"email": "sampleEmail@emailProvider.com",
@@ -41,7 +45,7 @@ curl --request POST \
 
 ```
 curl --request POST \
-  --url http://localhost:9000/v1/account/session \
+  --url http://18.224.199.52:9000/v1/account/session \
   --header 'content-type: application/json' \
   --data '{
 	"email": "sampleEmail@emailProvider.com",
@@ -52,7 +56,7 @@ curl --request POST \
 
 ```
 curl --request POST \
-  --url http://localhost:9000/v1/account/session/refresh \
+  --url http://18.224.199.52:9000/v1/account/session/refresh \
   --header 'content-type: application/json' \
   --data '{
 	"email": "sampleEmail@emailProvider.com",
@@ -63,7 +67,7 @@ curl --request POST \
 
 ```
 curl --request PUT \
-  --url http://localhost:9000/v1/me/account \
+  --url http://18.224.199.52:9000/v1/me/account \
   --header 'content-type: application/json' \
   --header 'authorization: Bearer {token}' \
   --data '{
@@ -75,14 +79,14 @@ curl --request PUT \
 
 ```
 curl --request GET \
-  --url http://localhost:9000/v1/me/account \
+  --url http://18.224.199.52:9000/v1/me/account \
   --header 'authorization: Bearer {token}' \
 ```
 #### Create new game
 
 ```
 curl --request POST \
-  --url http://localhost:9000/v1/minesweeper \
+  --url http://18.224.199.52:9000/v1/minesweeper \
   --header 'authorization: Bearer {token}' \
   --header 'content-type: application/json' \
   --data '{
@@ -95,14 +99,14 @@ curl --request POST \
 
 ```
 curl --request GET \
-  --url http://localhost:9000/v1/minesweeper/15 \
+  --url http://18.224.199.52:9000/v1/minesweeper/15 \
   --header 'authorization: Bearer {token}' \
 ```
 #### Reveal one field
 
 ```
 curl --request PUT \
-  --url http://localhost:9000/v1/minesweeper/15/reveal \
+  --url http://18.224.199.52:9000/v1/minesweeper/15/reveal \
   --header 'authorization: Bearer {token}' \
   --header 'content-type: application/json' \
   --data '{
@@ -114,7 +118,7 @@ curl --request PUT \
 
 ```
 curl --request PUT \
-  --url http://localhost:9000/v1/minesweeper/15/flag \
+  --url http://18.224.199.52:9000/v1/minesweeper/15/flag \
   --header 'authorization: Bearer {token}' \
   --header 'content-type: application/json' \
   --data '{
@@ -127,7 +131,7 @@ curl --request PUT \
 
 ```
 curl --request PUT \
-  --url http://localhost:9000/v1/minesweeper/15/unflag \
+  --url http://18.224.199.52:9000/v1/minesweeper/15/unflag \
   --header 'authorization: Bearer {token}' \
   --header 'content-type: application/json' \
   --data '{
